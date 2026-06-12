@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>World Cup '26 Pool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pitch:#0B3D2E; --pitch2:#10503C; --pitch3:#15604A;
+  --chalk:#F6F4EC; --chalk-dim:#D8D4C4;
+  --ink:#14231D; --line:rgba(246,244,236,.18);
+  --gold:#E8B33C; --gold-deep:#C2902A;
+  --ok:#3FA66B; --ok-bg:rgba(63,166,107,.16);
+  --bad:#C94F3D; --bad-bg:rgba(201,79,61,.14);
+  --card:#0E4636; --card-edge:rgba(246,244,236,.12);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--pitch); color:var(--chalk);
+  font-family:'Archivo',system-ui,sans-serif; font-size:16px; line-height:1.45;
+  background-image:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(246,244,236,.06), transparent 60%),
+    repeating-linear-gradient(0deg, transparent 0 88px, rgba(246,244,236,.025) 88px 176px);
+  min-height:100svh;}
+button{font:inherit; color:inherit; cursor:pointer; border:none; background:none}
+input{font:inherit}
+.wrap{max-width:560px; margin:0 auto; padding:0 14px 90px}
+@media(min-width:900px){ .wrap.wide{max-width:1100px} }
+
+/* ---------- header ---------- */
+header{position:sticky; top:0; z-index:40; background:linear-gradient(var(--pitch) 75%, rgba(11,61,46,0));
+  padding:14px 14px 18px;}
+.head-in{max-width:560px; margin:0 auto; display:flex; align-items:center; gap:10px}
+.crest{width:42px; height:42px; flex:none; border:2px solid var(--chalk); border-radius:50%;
+  display:grid; place-items:center; position:relative}
+.crest::before{content:""; position:absolute; left:-9px; right:-9px; top:50%; height:2px; background:var(--chalk); opacity:.55}
+.crest b{font-family:'Archivo Black'; font-size:13px; letter-spacing:.5px}
+.title{flex:1; min-width:0}
+.title h1{font-family:'Archivo Black'; font-size:19px; margin:0; letter-spacing:.04em; line-height:1.05; text-transform:uppercase}
+.title small{display:block; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--chalk-dim)}
+.pool-chip{font-size:10px; font-weight:800; letter-spacing:.14em; padding:4px 8px; border:1.5px solid var(--gold);
+  color:var(--gold); border-radius:99px; text-transform:uppercase; white-space:nowrap}
+.pool-chip.test{border-color:var(--chalk-dim); color:var(--chalk-dim)}
+
+/* ---------- generic ---------- */
+.card{background:var(--card); border:1px solid var(--card-edge); border-radius:14px; padding:16px; margin:12px 0}
+.eyebrow{font-size:11px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); margin:0 0 6px}
+h2{font-family:'Archivo Black'; font-size:22px; text-transform:uppercase; letter-spacing:.03em; margin:4px 0 10px; line-height:1.1}
+h3{font-family:'Archivo Black'; font-size:15px; text-transform:uppercase; letter-spacing:.05em; margin:0 0 8px}
+p{margin:.4em 0}
+.muted{color:var(--chalk-dim); font-size:13.5px}
+.btn{display:block; width:100%; text-align:center; padding:14px; border-radius:12px; font-weight:800;
+  letter-spacing:.06em; text-transform:uppercase; font-size:14px;
+  background:var(--gold); color:var(--ink); box-shadow:0 3px 0 var(--gold-deep); transition:transform .06s}
+.btn:active{transform:translateY(2px); box-shadow:none}
+.btn.ghost{background:transparent; color:var(--chalk); border:1.5px solid var(--line); box-shadow:none}
+.btn.small{display:inline-block; width:auto; padding:9px 16px; font-size:12px}
+.btn:disabled{opacity:.4; pointer-events:none}
+.row{display:flex; gap:10px; align-items:center}
+.input{width:100%; padding:13px 14px; border-radius:11px; border:1.5px solid var(--line);
+  background:rgba(0,0,0,.22); color:var(--chalk); outline:none; font-size:16px}
+.input:focus{border-color:var(--gold)}
+.notice{font-size:13px; padding:10px 12px; border-radius:10px; background:var(--bad-bg); border:1px solid rgba(201,79,61,.4); color:#F1C4BC; margin:10px 0}
+.notice.ok{background:var(--ok-bg); border-color:rgba(63,166,107,.4); color:#C8E9D6}
+.lockchip{display:inline-flex; gap:6px; align-items:center; font-size:12px; font-weight:700; color:var(--chalk-dim);
+  border:1px solid var(--line); border-radius:99px; padding:5px 11px; letter-spacing:.04em}
+.lockchip b{color:var(--gold); font-variant-numeric:tabular-nums}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex; gap:6px; margin:14px 0 4px; border-bottom:2px solid var(--line); position:sticky; top:74px; z-index:30; background:var(--pitch); padding-top:4px}
+.tab{flex:1; padding:11px 4px; font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--chalk-dim); border-bottom:3px solid transparent; margin-bottom:-2px}
+.tab.on{color:var(--gold); border-color:var(--gold)}
+.tab .dot{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--ok); margin-left:5px; vertical-align:1px}
+
+/* ---------- group cards ---------- */
+.group-card{background:var(--card); border:1px solid var(--card-edge); border-radius:14px; overflow:hidden; margin:12px 0}
+.group-head{display:flex; align-items:center; justify-content:space-between; padding:10px 14px;
+  background:rgba(0,0,0,.18); border-bottom:1px dashed var(--line)}
+.group-head b{font-family:'Archivo Black'; letter-spacing:.08em; font-size:14px}
+.gdone{font-size:11px; color:var(--ok); font-weight:800; letter-spacing:.1em}
+.team-row{display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid rgba(246,244,236,.06)}
+.team-row:last-child{border-bottom:none}
+.team-row.dragging{opacity:.4}
+.pos{flex:none; width:34px; text-align:center; font-family:'Archivo Black'; font-size:13px; color:var(--chalk-dim)}
+.pos.p1{color:var(--gold)} .pos.p2{color:var(--chalk)} .pos.p3{color:#9FD9BC}
+.flag{font-size:21px; flex:none; width:28px; text-align:center}
+.tname{flex:1; min-width:0; font-weight:700; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.ptchip{flex:none; font-size:10px; font-weight:800; color:var(--ink); background:var(--chalk-dim); border-radius:6px; padding:2px 6px; letter-spacing:.04em}
+.ptchip.gold{background:var(--gold)}
+.arrows{display:flex; flex-direction:column; gap:2px; flex:none}
+.arrows button{width:34px; height:24px; border-radius:7px; background:rgba(246,244,236,.08); font-size:13px; line-height:1; display:grid; place-items:center}
+.arrows button:active{background:rgba(246,244,236,.22)}
+.arrows button:disabled{opacity:.18}
+.row-correct{background:var(--ok-bg)} .row-wrong{background:var(--bad-bg)}
+.scoremark{flex:none; font-weight:900; font-size:13px; width:38px; text-align:right; font-variant-numeric:tabular-nums}
+.scoremark.ok{color:var(--ok)} .scoremark.bad{color:var(--bad)}
+
+/* ---------- thirds picker ---------- */
+.thirds-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.third-chip{display:flex; gap:8px; align-items:center; padding:10px; border-radius:11px;
+  border:1.5px solid var(--line); background:rgba(0,0,0,.16); text-align:left}
+.third-chip .g{font-family:'Archivo Black'; font-size:11px; color:var(--chalk-dim); width:14px}
+.third-chip .n{font-weight:700; font-size:13px; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.third-chip.sel{border-color:var(--gold); background:rgba(232,179,60,.13)}
+.third-chip.sel .g{color:var(--gold)}
+.third-chip.ok{border-color:var(--ok); background:var(--ok-bg)}
+.third-chip.bad{border-color:var(--bad); background:var(--bad-bg)}
+.third-chip:disabled{opacity:.85}
+.counter{font-family:'Archivo Black'; font-size:13px; letter-spacing:.05em}
+.counter b{color:var(--gold)}
+
+/* ---------- knockout tickets ---------- */
+.round-label{display:flex; align-items:center; gap:10px; margin:22px 0 10px}
+.round-label h3{margin:0; white-space:nowrap}
+.round-label .rule{flex:1; height:1.5px; background:var(--line)}
+.round-label .pts{font-size:11px; font-weight:800; color:var(--gold); letter-spacing:.08em; white-space:nowrap}
+.ticket{background:var(--card); border:1px solid var(--card-edge); border-radius:13px; margin:10px 0; overflow:hidden; position:relative}
+.ticket::before,.ticket::after{content:""; position:absolute; width:14px; height:14px; border-radius:50%;
+  background:var(--pitch); border:1px solid var(--card-edge); left:50%; transform:translateX(-50%)}
+.ticket::before{top:-8px} .ticket::after{bottom:-8px}
+.ticket .mid{position:absolute; left:50%; top:8px; bottom:8px; border-left:1.5px dashed var(--line); transform:translateX(-50%)}
+.ticket-in{display:grid; grid-template-columns:1fr 1fr}
+.tk-team{display:flex; flex-direction:column; align-items:center; gap:3px; padding:14px 8px 12px; position:relative; transition:background .12s}
+.tk-team .flag{font-size:26px; width:auto}
+.tk-team .nm{font-weight:800; font-size:12.5px; text-align:center; line-height:1.15; letter-spacing:.02em}
+.tk-team .src{font-size:9.5px; color:var(--chalk-dim); letter-spacing:.1em; text-transform:uppercase}
+.tk-team.pick{background:rgba(232,179,60,.14)}
+.tk-team.pick .nm{color:var(--gold)}
+.tk-team.pick::after{content:""; position:absolute; left:18%; right:18%; bottom:7px; height:2.5px; background:var(--gold); border-radius:2px}
+.tk-team.ok{background:var(--ok-bg)} .tk-team.ok::after{background:var(--ok)}
+.tk-team.bad{background:var(--bad-bg)} .tk-team.bad .nm{color:#E8A296; text-decoration:line-through} .tk-team.bad::after{background:var(--bad)}
+.tk-team.tbd{opacity:.45}
+.tk-team:disabled{cursor:default}
+.mno{position:absolute; top:4px; left:50%; transform:translateX(-50%); font-size:8.5px; color:var(--chalk-dim);
+  letter-spacing:.12em; background:var(--pitch); padding:0 5px; z-index:2}
+.champ-card{border:2px solid var(--gold); border-radius:16px; background:linear-gradient(160deg, rgba(232,179,60,.16), rgba(232,179,60,.03));
+  padding:20px; text-align:center; margin:16px 0}
+.champ-card .flag{font-size:46px}
+.champ-card .nm{font-family:'Archivo Black'; font-size:21px; text-transform:uppercase; letter-spacing:.04em; margin-top:4px}
+.champ-card .lbl{font-size:11px; letter-spacing:.3em; color:var(--gold); font-weight:800; text-transform:uppercase}
+
+/* ---------- people / leaderboard ---------- */
+.person-row{display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:13px 14px;
+  background:var(--card); border:1px solid var(--card-edge); border-radius:13px; margin:8px 0}
+.person-row .rank{font-family:'Archivo Black'; width:30px; font-size:15px; color:var(--chalk-dim); text-align:center}
+.person-row .rank.r1{color:var(--gold)} .person-row .rank.r2{color:#CFCBBC} .person-row .rank.r3{color:#C9956B}
+.person-row .pname{flex:1; font-weight:800; font-size:15px; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.person-row .ppts{font-family:'Archivo Black'; font-size:17px; color:var(--gold); font-variant-numeric:tabular-nums}
+.person-row .psub{font-size:11px; color:var(--chalk-dim); display:block; font-weight:600}
+.scorebar{display:flex; gap:14px; flex-wrap:wrap; padding:12px 0 2px}
+.scorebar div{font-size:12px; color:var(--chalk-dim)} .scorebar b{display:block; font-family:'Archivo Black'; font-size:19px; color:var(--chalk)}
+.scorebar .tot b{color:var(--gold); font-size:24px}
+
+/* misc */
+.backlink{display:inline-flex; gap:6px; align-items:center; font-weight:800; font-size:13px; color:var(--chalk-dim);
+  padding:8px 0; letter-spacing:.05em; text-transform:uppercase}
+.footer-admin{text-align:center; margin-top:34px}
+.footer-admin button{color:var(--chalk-dim); font-size:12px; letter-spacing:.12em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px}
+dialog{border:none; border-radius:16px; background:var(--card); color:var(--chalk); padding:20px; max-width:420px; width:calc(100% - 40px)}
+dialog::backdrop{background:rgba(5,20,15,.75)}
+table.rules{width:100%; border-collapse:collapse; font-size:13.5px; margin:8px 0}
+table.rules td{padding:7px 4px; border-bottom:1px solid var(--line)}
+table.rules td:last-child{text-align:right; font-family:'Archivo Black'; color:var(--gold)}
+.savebar{position:fixed; left:0; right:0; bottom:0; z-index:50; padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(transparent, var(--pitch) 30%)}
+.savebar .in{max-width:560px; margin:0 auto; display:flex; gap:10px}
+.spin{display:inline-block; width:14px; height:14px; border:2px solid var(--ink); border-top-color:transparent; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <div class="crest"><b>26</b></div>
+    <div class="title">
+      <small>The Pool · USA / Mexico / Canada</small>
+      <h1>World Cup Bracket</h1>
+    </div>
+    <span class="pool-chip" id="poolChip">MAIN</span>
+  </div>
+</header>
+
+<div class="wrap" id="app"></div>
+
+<dialog id="dlg"></dialog>
+
+<script type="module">
+/* ════════════════════════════════════════════════════════════════════
+   CONFIGURATION — the only section you need to edit (see README)
+   ════════════════════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAaI51bvphc4dqJe1n2XSVsnscNKaA3e7Q",
+  authDomain: "world-cup-bracket-ba746.firebaseapp.com",
+  projectId: "world-cup-bracket-ba746",
+  storageBucket: "world-cup-bracket-ba746.firebasestorage.app",
+  messagingSenderId: "307937317261",
+  appId: "1:307937317261:web:a6b4d78866e0e9079badc4"
+};
+const ADMIN_PIN  = "2026";                       // change this! Only the pool runner should know it.
+const LOCK_ISO   = "2026-06-21T03:59:59Z";       // group picks lock: Jun 20, 11:59 PM ET
+/* ════════════════════════════════════════════════════════════════════ */
+
+/*LOGIC-START*/
+const POINTS = { gw:3, ru:2, third:2, r32win:3, r16team:4, qf:6, sf:10, fin:15, champ:25 };
+
+const TEAMS = {
+  MEX:["Mexico","🇲🇽","A"], RSA:["South Africa","🇿🇦","A"], KOR:["South Korea","🇰🇷","A"], CZE:["Czechia","🇨🇿","A"],
+  CAN:["Canada","🇨🇦","B"], BIH:["Bosnia & Herz.","🇧🇦","B"], QAT:["Qatar","🇶🇦","B"], SUI:["Switzerland","🇨🇭","B"],
+  BRA:["Brazil","🇧🇷","C"], MAR:["Morocco","🇲🇦","C"], HAI:["Haiti","🇭🇹","C"], SCO:["Scotland","🏴󠁧󠁢󠁳󠁣󠁴󠁿","C"],
+  USA:["United States","🇺🇸","D"], PAR:["Paraguay","🇵🇾","D"], AUS:["Australia","🇦🇺","D"], TUR:["Türkiye","🇹🇷","D"],
+  GER:["Germany","🇩🇪","E"], CUW:["Curaçao","🇨🇼","E"], CIV:["Ivory Coast","🇨🇮","E"], ECU:["Ecuador","🇪🇨","E"],
+  NED:["Netherlands","🇳🇱","F"], JPN:["Japan","🇯🇵","F"], SWE:["Sweden","🇸🇪","F"], TUN:["Tunisia","🇹🇳","F"],
+  BEL:["Belgium","🇧🇪","G"], EGY:["Egypt","🇪🇬","G"], IRN:["Iran","🇮🇷","G"], NZL:["New Zealand","🇳🇿","G"],
+  ESP:["Spain","🇪🇸","H"], CPV:["Cape Verde","🇨🇻","H"], KSA:["Saudi Arabia","🇸🇦","H"], URU:["Uruguay","🇺🇾","H"],
+  FRA:["France","🇫🇷","I"], SEN:["Senegal","🇸🇳","I"], IRQ:["Iraq","🇮🇶","I"], NOR:["Norway","🇳🇴","I"],
+  ARG:["Argentina","🇦🇷","J"], ALG:["Algeria","🇩🇿","J"], AUT:["Austria","🇦🇹","J"], JOR:["Jordan","🇯🇴","J"],
+  POR:["Portugal","🇵🇹","K"], COD:["DR Congo","🇨🇩","K"], UZB:["Uzbekistan","🇺🇿","K"], COL:["Colombia","🇨🇴","K"],
+  ENG:["England","🏴󠁧󠁢󠁥󠁮󠁧󠁿","L"], CRO:["Croatia","🇭🇷","L"], GHA:["Ghana","🇬🇭","L"], PAN:["Panama","🇵🇦","L"]
+};
+const GROUPS = "ABCDEFGHIJKL".split("");
+const GROUP_TEAMS = {};
+for (const [code,[,,g]] of Object.entries(TEAMS)) (GROUP_TEAMS[g]??=[]).push(code);
+
+/* FIFA Annex C — all 495 third-place allocation combinations.
+   Each line: <8 qualified groups, sorted> <opponents of 1A 1B 1D 1E 1G 1I 1K 1L> */
+const ANNEXC_RAW = `EFGHIJKL EJIFHGLK
+DFGHIJKL HGIDJFLK
+DEGHIJKL EJIDHGLK
+DEFHIJKL EJIDHFLK
+DEFGIJKL EGIDJFLK
+DEFGHJKL EGJDHFLK
+DEFGHIKL EGIDHFLK
+DEFGHIJL EGJDHFLI
+DEFGHIJK EGJDHFIK
+CFGHIJKL HGICJFLK
+CEGHIJKL EJICHGLK
+CEFHIJKL EJICHFLK
+CEFGIJKL EGICJFLK
+CEFGHJKL EGJCHFLK
+CEFGHIKL EGICHFLK
+CEFGHIJL EGJCHFLI
+CEFGHIJK EGJCHFIK
+CDGHIJKL HGICJDLK
+CDFHIJKL CJIDHFLK
+CDFGIJKL CGIDJFLK
+CDFGHJKL CGJDHFLK
+CDFGHIKL CGIDHFLK
+CDFGHIJL CGJDHFLI
+CDFGHIJK CGJDHFIK
+CDEHIJKL EJICHDLK
+CDEGIJKL EGICJDLK
+CDEGHJKL EGJCHDLK
+CDEGHIKL EGICHDLK
+CDEGHIJL EGJCHDLI
+CDEGHIJK EGJCHDIK
+CDEFIJKL CJEDIFLK
+CDEFHJKL CJEDHFLK
+CDEFHIKL CEIDHFLK
+CDEFHIJL CJEDHFLI
+CDEFHIJK CJEDHFIK
+CDEFGJKL CGEDJFLK
+CDEFGIKL CGEDIFLK
+CDEFGIJL CGEDJFLI
+CDEFGIJK CGEDJFIK
+CDEFGHKL CGEDHFLK
+CDEFGHJL CGJDHFLE
+CDEFGHJK CGJDHFEK
+CDEFGHIL CGEDHFLI
+CDEFGHIK CGEDHFIK
+CDEFGHIJ CGJDHFEI
+BFGHIJKL HJBFIGLK
+BEGHIJKL EJIBHGLK
+BEFHIJKL EJBFIHLK
+BEFGIJKL EJBFIGLK
+BEFGHJKL EJBFHGLK
+BEFGHIKL EGBFIHLK
+BEFGHIJL EJBFHGLI
+BEFGHIJK EJBFHGIK
+BDGHIJKL HJBDIGLK
+BDFHIJKL HJBDIFLK
+BDFGIJKL IGBDJFLK
+BDFGHJKL HGBDJFLK
+BDFGHIKL HGBDIFLK
+BDFGHIJL HGBDJFLI
+BDFGHIJK HGBDJFIK
+BDEHIJKL EJBDIHLK
+BDEGIJKL EJBDIGLK
+BDEGHJKL EJBDHGLK
+BDEGHIKL EGBDIHLK
+BDEGHIJL EJBDHGLI
+BDEGHIJK EJBDHGIK
+BDEFIJKL EJBDIFLK
+BDEFHJKL EJBDHFLK
+BDEFHIKL EIBDHFLK
+BDEFHIJL EJBDHFLI
+BDEFHIJK EJBDHFIK
+BDEFGJKL EGBDJFLK
+BDEFGIKL EGBDIFLK
+BDEFGIJL EGBDJFLI
+BDEFGIJK EGBDJFIK
+BDEFGHKL EGBDHFLK
+BDEFGHJL HGBDJFLE
+BDEFGHJK HGBDJFEK
+BDEFGHIL EGBDHFLI
+BDEFGHIK EGBDHFIK
+BDEFGHIJ HGBDJFEI
+BCGHIJKL HJBCIGLK
+BCFHIJKL HJBCIFLK
+BCFGIJKL IGBCJFLK
+BCFGHJKL HGBCJFLK
+BCFGHIKL HGBCIFLK
+BCFGHIJL HGBCJFLI
+BCFGHIJK HGBCJFIK
+BCEHIJKL EJBCIHLK
+BCEGIJKL EJBCIGLK
+BCEGHJKL EJBCHGLK
+BCEGHIKL EGBCIHLK
+BCEGHIJL EJBCHGLI
+BCEGHIJK EJBCHGIK
+BCEFIJKL EJBCIFLK
+BCEFHJKL EJBCHFLK
+BCEFHIKL EIBCHFLK
+BCEFHIJL EJBCHFLI
+BCEFHIJK EJBCHFIK
+BCEFGJKL EGBCJFLK
+BCEFGIKL EGBCIFLK
+BCEFGIJL EGBCJFLI
+BCEFGIJK EGBCJFIK
+BCEFGHKL EGBCHFLK
+BCEFGHJL HGBCJFLE
+BCEFGHJK HGBCJFEK
+BCEFGHIL EGBCHFLI
+BCEFGHIK EGBCHFIK
+BCEFGHIJ HGBCJFEI
+BCDHIJKL HJBCIDLK
+BCDGIJKL IGBCJDLK
+BCDGHJKL HGBCJDLK
+BCDGHIKL HGBCIDLK
+BCDGHIJL HGBCJDLI
+BCDGHIJK HGBCJDIK
+BCDFIJKL CJBDIFLK
+BCDFHJKL CJBDHFLK
+BCDFHIKL CIBDHFLK
+BCDFHIJL CJBDHFLI
+BCDFHIJK CJBDHFIK
+BCDFGJKL CGBDJFLK
+BCDFGIKL CGBDIFLK
+BCDFGIJL CGBDJFLI
+BCDFGIJK CGBDJFIK
+BCDFGHKL CGBDHFLK
+BCDFGHJL CGBDHFLJ
+BCDFGHJK HGBCJFDK
+BCDFGHIL CGBDHFLI
+BCDFGHIK CGBDHFIK
+BCDFGHIJ HGBCJFDI
+BCDEIJKL EJBCIDLK
+BCDEHJKL EJBCHDLK
+BCDEHIKL EIBCHDLK
+BCDEHIJL EJBCHDLI
+BCDEHIJK EJBCHDIK
+BCDEGJKL EGBCJDLK
+BCDEGIKL EGBCIDLK
+BCDEGIJL EGBCJDLI
+BCDEGIJK EGBCJDIK
+BCDEGHKL EGBCHDLK
+BCDEGHJL HGBCJDLE
+BCDEGHJK HGBCJDEK
+BCDEGHIL EGBCHDLI
+BCDEGHIK EGBCHDIK
+BCDEGHIJ HGBCJDEI
+BCDEFJKL CJBDEFLK
+BCDEFIKL CEBDIFLK
+BCDEFIJL CJBDEFLI
+BCDEFIJK CJBDEFIK
+BCDEFHKL CEBDHFLK
+BCDEFHJL CJBDHFLE
+BCDEFHJK CJBDHFEK
+BCDEFHIL CEBDHFLI
+BCDEFHIK CEBDHFIK
+BCDEFHIJ CJBDHFEI
+BCDEFGKL CGBDEFLK
+BCDEFGJL CGBDJFLE
+BCDEFGJK CGBDJFEK
+BCDEFGIL CGBDEFLI
+BCDEFGIK CGBDEFIK
+BCDEFGIJ CGBDJFEI
+BCDEFGHL CGBDHFLE
+BCDEFGHK CGBDHFEK
+BCDEFGHJ HGBCJFDE
+BCDEFGHI CGBDHFEI
+AFGHIJKL HJIFAGLK
+AEGHIJKL EJIAHGLK
+AEFHIJKL EJIFAHLK
+AEFGIJKL EJIFAGLK
+AEFGHJKL EGJFAHLK
+AEFGHIKL EGIFAHLK
+AEFGHIJL EGJFAHLI
+AEFGHIJK EGJFAHIK
+ADGHIJKL HJIDAGLK
+ADFHIJKL HJIDAFLK
+ADFGIJKL IGJDAFLK
+ADFGHJKL HGJDAFLK
+ADFGHIKL HGIDAFLK
+ADFGHIJL HGJDAFLI
+ADFGHIJK HGJDAFIK
+ADEHIJKL EJIDAHLK
+ADEGIJKL EJIDAGLK
+ADEGHJKL EGJDAHLK
+ADEGHIKL EGIDAHLK
+ADEGHIJL EGJDAHLI
+ADEGHIJK EGJDAHIK
+ADEFIJKL EJIDAFLK
+ADEFHJKL HJEDAFLK
+ADEFHIKL HEIDAFLK
+ADEFHIJL HJEDAFLI
+ADEFHIJK HJEDAFIK
+ADEFGJKL EGJDAFLK
+ADEFGIKL EGIDAFLK
+ADEFGIJL EGJDAFLI
+ADEFGIJK EGJDAFIK
+ADEFGHKL HGEDAFLK
+ADEFGHJL HGJDAFLE
+ADEFGHJK HGJDAFEK
+ADEFGHIL HGEDAFLI
+ADEFGHIK HGEDAFIK
+ADEFGHIJ HGJDAFEI
+ACGHIJKL HJICAGLK
+ACFHIJKL HJICAFLK
+ACFGIJKL IGJCAFLK
+ACFGHJKL HGJCAFLK
+ACFGHIKL HGICAFLK
+ACFGHIJL HGJCAFLI
+ACFGHIJK HGJCAFIK
+ACEHIJKL EJICAHLK
+ACEGIJKL EJICAGLK
+ACEGHJKL EGJCAHLK
+ACEGHIKL EGICAHLK
+ACEGHIJL EGJCAHLI
+ACEGHIJK EGJCAHIK
+ACEFIJKL EJICAFLK
+ACEFHJKL HJECAFLK
+ACEFHIKL HEICAFLK
+ACEFHIJL HJECAFLI
+ACEFHIJK HJECAFIK
+ACEFGJKL EGJCAFLK
+ACEFGIKL EGICAFLK
+ACEFGIJL EGJCAFLI
+ACEFGIJK EGJCAFIK
+ACEFGHKL HGECAFLK
+ACEFGHJL HGJCAFLE
+ACEFGHJK HGJCAFEK
+ACEFGHIL HGECAFLI
+ACEFGHIK HGECAFIK
+ACEFGHIJ HGJCAFEI
+ACDHIJKL HJICADLK
+ACDGIJKL IGJCADLK
+ACDGHJKL HGJCADLK
+ACDGHIKL HGICADLK
+ACDGHIJL HGJCADLI
+ACDGHIJK HGJCADIK
+ACDFIJKL CJIDAFLK
+ACDFHJKL HJFCADLK
+ACDFHIKL HFICADLK
+ACDFHIJL HJFCADLI
+ACDFHIJK HJFCADIK
+ACDFGJKL CGJDAFLK
+ACDFGIKL CGIDAFLK
+ACDFGIJL CGJDAFLI
+ACDFGIJK CGJDAFIK
+ACDFGHKL HGFCADLK
+ACDFGHJL CGJDAFLH
+ACDFGHJK HGJCAFDK
+ACDFGHIL HGFCADLI
+ACDFGHIK HGFCADIK
+ACDFGHIJ HGJCAFDI
+ACDEIJKL EJICADLK
+ACDEHJKL HJECADLK
+ACDEHIKL HEICADLK
+ACDEHIJL HJECADLI
+ACDEHIJK HJECADIK
+ACDEGJKL EGJCADLK
+ACDEGIKL EGICADLK
+ACDEGIJL EGJCADLI
+ACDEGIJK EGJCADIK
+ACDEGHKL HGECADLK
+ACDEGHJL HGJCADLE
+ACDEGHJK HGJCADEK
+ACDEGHIL HGECADLI
+ACDEGHIK HGECADIK
+ACDEGHIJ HGJCADEI
+ACDEFJKL CJEDAFLK
+ACDEFIKL CEIDAFLK
+ACDEFIJL CJEDAFLI
+ACDEFIJK CJEDAFIK
+ACDEFHKL HEFCADLK
+ACDEFHJL HJFCADLE
+ACDEFHJK HJECAFDK
+ACDEFHIL HEFCADLI
+ACDEFHIK HEFCADIK
+ACDEFHIJ HJECAFDI
+ACDEFGKL CGEDAFLK
+ACDEFGJL CGJDAFLE
+ACDEFGJK CGJDAFEK
+ACDEFGIL CGEDAFLI
+ACDEFGIK CGEDAFIK
+ACDEFGIJ CGJDAFEI
+ACDEFGHL HGFCADLE
+ACDEFGHK HGECAFDK
+ACDEFGHJ HGJCAFDE
+ACDEFGHI HGECAFDI
+ABGHIJKL HJBAIGLK
+ABFHIJKL HJBAIFLK
+ABFGIJKL IJBFAGLK
+ABFGHJKL HJBFAGLK
+ABFGHIKL HGBAIFLK
+ABFGHIJL HJBFAGLI
+ABFGHIJK HJBFAGIK
+ABEHIJKL EJBAIHLK
+ABEGIJKL EJBAIGLK
+ABEGHJKL EJBAHGLK
+ABEGHIKL EGBAIHLK
+ABEGHIJL EJBAHGLI
+ABEGHIJK EJBAHGIK
+ABEFIJKL EJBAIFLK
+ABEFHJKL EJBFAHLK
+ABEFHIKL EIBFAHLK
+ABEFHIJL EJBFAHLI
+ABEFHIJK EJBFAHIK
+ABEFGJKL EJBFAGLK
+ABEFGIKL EGBAIFLK
+ABEFGIJL EJBFAGLI
+ABEFGIJK EJBFAGIK
+ABEFGHKL EGBFAHLK
+ABEFGHJL HJBFAGLE
+ABEFGHJK HJBFAGEK
+ABEFGHIL EGBFAHLI
+ABEFGHIK EGBFAHIK
+ABEFGHIJ HJBFAGEI
+ABDHIJKL IJBDAHLK
+ABDGIJKL IJBDAGLK
+ABDGHJKL HJBDAGLK
+ABDGHIKL IGBDAHLK
+ABDGHIJL HJBDAGLI
+ABDGHIJK HJBDAGIK
+ABDFIJKL IJBDAFLK
+ABDFHJKL HJBDAFLK
+ABDFHIKL HIBDAFLK
+ABDFHIJL HJBDAFLI
+ABDFHIJK HJBDAFIK
+ABDFGJKL FJBDAGLK
+ABDFGIKL IGBDAFLK
+ABDFGIJL FJBDAGLI
+ABDFGIJK FJBDAGIK
+ABDFGHKL HGBDAFLK
+ABDFGHJL HGBDAFLJ
+ABDFGHJK HGBDAFJK
+ABDFGHIL HGBDAFLI
+ABDFGHIK HGBDAFIK
+ABDFGHIJ HGBDAFIJ
+ABDEIJKL EJBAIDLK
+ABDEHJKL EJBDAHLK
+ABDEHIKL EIBDAHLK
+ABDEHIJL EJBDAHLI
+ABDEHIJK EJBDAHIK
+ABDEGJKL EJBDAGLK
+ABDEGIKL EGBAIDLK
+ABDEGIJL EJBDAGLI
+ABDEGIJK EJBDAGIK
+ABDEGHKL EGBDAHLK
+ABDEGHJL HJBDAGLE
+ABDEGHJK HJBDAGEK
+ABDEGHIL EGBDAHLI
+ABDEGHIK EGBDAHIK
+ABDEGHIJ HJBDAGEI
+ABDEFJKL EJBDAFLK
+ABDEFIKL EIBDAFLK
+ABDEFIJL EJBDAFLI
+ABDEFIJK EJBDAFIK
+ABDEFHKL HEBDAFLK
+ABDEFHJL HJBDAFLE
+ABDEFHJK HJBDAFEK
+ABDEFHIL HEBDAFLI
+ABDEFHIK HEBDAFIK
+ABDEFHIJ HJBDAFEI
+ABDEFGKL EGBDAFLK
+ABDEFGJL EGBDAFLJ
+ABDEFGJK EGBDAFJK
+ABDEFGIL EGBDAFLI
+ABDEFGIK EGBDAFIK
+ABDEFGIJ EGBDAFIJ
+ABDEFGHL HGBDAFLE
+ABDEFGHK HGBDAFEK
+ABDEFGHJ HGBDAFEJ
+ABDEFGHI HGBDAFEI
+ABCHIJKL IJBCAHLK
+ABCGIJKL IJBCAGLK
+ABCGHJKL HJBCAGLK
+ABCGHIKL IGBCAHLK
+ABCGHIJL HJBCAGLI
+ABCGHIJK HJBCAGIK
+ABCFIJKL IJBCAFLK
+ABCFHJKL HJBCAFLK
+ABCFHIKL HIBCAFLK
+ABCFHIJL HJBCAFLI
+ABCFHIJK HJBCAFIK
+ABCFGJKL CJBFAGLK
+ABCFGIKL IGBCAFLK
+ABCFGIJL CJBFAGLI
+ABCFGIJK CJBFAGIK
+ABCFGHKL HGBCAFLK
+ABCFGHJL HGBCAFLJ
+ABCFGHJK HGBCAFJK
+ABCFGHIL HGBCAFLI
+ABCFGHIK HGBCAFIK
+ABCFGHIJ HGBCAFIJ
+ABCEIJKL EJBAICLK
+ABCEHJKL EJBCAHLK
+ABCEHIKL EIBCAHLK
+ABCEHIJL EJBCAHLI
+ABCEHIJK EJBCAHIK
+ABCEGJKL EJBCAGLK
+ABCEGIKL EGBAICLK
+ABCEGIJL EJBCAGLI
+ABCEGIJK EJBCAGIK
+ABCEGHKL EGBCAHLK
+ABCEGHJL HJBCAGLE
+ABCEGHJK HJBCAGEK
+ABCEGHIL EGBCAHLI
+ABCEGHIK EGBCAHIK
+ABCEGHIJ HJBCAGEI
+ABCEFJKL EJBCAFLK
+ABCEFIKL EIBCAFLK
+ABCEFIJL EJBCAFLI
+ABCEFIJK EJBCAFIK
+ABCEFHKL HEBCAFLK
+ABCEFHJL HJBCAFLE
+ABCEFHJK HJBCAFEK
+ABCEFHIL HEBCAFLI
+ABCEFHIK HEBCAFIK
+ABCEFHIJ HJBCAFEI
+ABCEFGKL EGBCAFLK
+ABCEFGJL EGBCAFLJ
+ABCEFGJK EGBCAFJK
+ABCEFGIL EGBCAFLI
+ABCEFGIK EGBCAFIK
+ABCEFGIJ EGBCAFIJ
+ABCEFGHL HGBCAFLE
+ABCEFGHK HGBCAFEK
+ABCEFGHJ HGBCAFEJ
+ABCEFGHI HGBCAFEI
+ABCDIJKL IJBCADLK
+ABCDHJKL HJBCADLK
+ABCDHIKL HIBCADLK
+ABCDHIJL HJBCADLI
+ABCDHIJK HJBCADIK
+ABCDGJKL CJBDAGLK
+ABCDGIKL IGBCADLK
+ABCDGIJL CJBDAGLI
+ABCDGIJK CJBDAGIK
+ABCDGHKL HGBCADLK
+ABCDGHJL HGBCADLJ
+ABCDGHJK HGBCADJK
+ABCDGHIL HGBCADLI
+ABCDGHIK HGBCADIK
+ABCDGHIJ HGBCADIJ
+ABCDFJKL CJBDAFLK
+ABCDFIKL CIBDAFLK
+ABCDFIJL CJBDAFLI
+ABCDFIJK CJBDAFIK
+ABCDFHKL HFBCADLK
+ABCDFHJL CJBDAFLH
+ABCDFHJK HJBCAFDK
+ABCDFHIL HFBCADLI
+ABCDFHIK HFBCADIK
+ABCDFHIJ HJBCAFDI
+ABCDFGKL CGBDAFLK
+ABCDFGJL CGBDAFLJ
+ABCDFGJK CGBDAFJK
+ABCDFGIL CGBDAFLI
+ABCDFGIK CGBDAFIK
+ABCDFGIJ CGBDAFIJ
+ABCDFGHL CGBDAFLH
+ABCDFGHK HGBCAFDK
+ABCDFGHJ HGBCAFDJ
+ABCDFGHI HGBCAFDI
+ABCDEJKL EJBCADLK
+ABCDEIKL EIBCADLK
+ABCDEIJL EJBCADLI
+ABCDEIJK EJBCADIK
+ABCDEHKL HEBCADLK
+ABCDEHJL HJBCADLE
+ABCDEHJK HJBCADEK
+ABCDEHIL HEBCADLI
+ABCDEHIK HEBCADIK
+ABCDEHIJ HJBCADEI
+ABCDEGKL EGBCADLK
+ABCDEGJL EGBCADLJ
+ABCDEGJK EGBCADJK
+ABCDEGIL EGBCADLI
+ABCDEGIK EGBCADIK
+ABCDEGIJ EGBCADIJ
+ABCDEGHL HGBCADLE
+ABCDEGHK HGBCADEK
+ABCDEGHJ HGBCADEJ
+ABCDEGHI HGBCADEI
+ABCDEFKL CEBDAFLK
+ABCDEFJL CJBDAFLE
+ABCDEFJK CJBDAFEK
+ABCDEFIL CEBDAFLI
+ABCDEFIK CEBDAFIK
+ABCDEFIJ CJBDAFEI
+ABCDEFHL HFBCADLE
+ABCDEFHK HEBCAFDK
+ABCDEFHJ HJBCAFDE
+ABCDEFHI HEBCAFDI
+ABCDEFGL CGBDAFLE
+ABCDEFGK CGBDAFEK
+ABCDEFGJ CGBDAFEJ
+ABCDEFGI CGBDAFEI
+ABCDEFGH HGBCAFDE`;
+const ANNEXC = {};
+for (const line of ANNEXC_RAW.trim().split("\n")) {
+  const [k,v] = line.trim().split(" ");
+  ANNEXC[k] = v;
+}
+const SEED_ORDER = ["A","B","D","E","G","I","K","L"]; // column order of Annex C values
+
+/* Round of 32 — FIFA matches 73–88. W=group winner, R=runner-up, T=allocated 3rd. */
+const R32_DEF = {
+  73:[["R","A"],["R","B"]], 74:[["W","E"],["T","E"]], 75:[["W","F"],["R","C"]], 76:[["W","C"],["R","F"]],
+  77:[["W","I"],["T","I"]], 78:[["R","E"],["R","I"]], 79:[["W","A"],["T","A"]], 80:[["W","L"],["T","L"]],
+  81:[["W","D"],["T","D"]], 82:[["W","G"],["T","G"]], 83:[["R","K"],["R","L"]], 84:[["W","H"],["R","J"]],
+  85:[["W","B"],["T","B"]], 86:[["W","J"],["R","H"]], 87:[["W","K"],["T","K"]], 88:[["R","D"],["R","G"]]
+};
+/* Later rounds: match -> [feederMatch, feederMatch] */
+const KO_DEF = {
+  89:[74,77], 90:[73,75], 91:[76,78], 92:[79,80], 93:[83,84], 94:[81,82], 95:[86,88], 96:[85,87],
+  97:[89,90], 98:[93,94], 99:[91,92], 100:[95,96],
+  101:[97,98], 102:[99,100], 104:[101,102]
+};
+const ROUNDS = [
+  { key:"R32", name:"Round of 32", matches:[74,77,73,75,83,84,81,82,76,78,79,80,86,88,85,87] },
+  { key:"R16", name:"Round of 16", matches:[89,90,93,94,91,92,95,96] },
+  { key:"QF",  name:"Quarterfinals", matches:[97,98,99,100] },
+  { key:"SF",  name:"Semifinals", matches:[101,102] },
+  { key:"F",   name:"Final", matches:[104] }
+];
+const MATCH_ROUND = {}; ROUNDS.forEach(r => r.matches.forEach(m => MATCH_ROUND[m]=r.key));
+
+function groupsComplete(groups){
+  return GROUPS.every(g => Array.isArray(groups?.[g]) && groups[g].length===4 &&
+    [...groups[g]].sort().join()===[...GROUP_TEAMS[g]].sort().join());
+}
+function thirdAllocation(thirds){            // thirds: array of 8 group letters
+  if (!thirds || thirds.length!==8) return null;
+  const key = [...thirds].sort().join("");
+  const val = ANNEXC[key];
+  if (!val) return null;
+  const map = {};
+  SEED_ORDER.forEach((s,i)=> map[s]=val[i]);  // group-winner s plays the 3rd of group map[s]
+  return map;
+}
+/* Resolve full bracket for an entry {groups, thirds, ko}.
+   Returns { matches: {id:{a,b,winner}}, champion } — slots null when undecidable. */
+function resolveBracket(entry){
+  const out = {matches:{}, champion:null};
+  const ok = groupsComplete(entry.groups);
+  const alloc = ok ? thirdAllocation(entry.thirds) : null;
+  const slot = ([kind,g]) => {
+    if (!ok) return null;
+    if (kind==="W") return entry.groups[g][0];
+    if (kind==="R") return entry.groups[g][1];
+    if (!alloc) return null;
+    return entry.groups[alloc[g]][2];          // 3rd-placed team of the allocated group
+  };
+  for (const [id,def] of Object.entries(R32_DEF)){
+    const a = slot(def[0]), b = slot(def[1]);
+    let w = entry.ko?.[id] ?? null;
+    if (w!==a && w!==b) w = null;              // invalidate stale picks
+    out.matches[id] = {a,b,winner:(a&&b)?w:null};
+  }
+  for (const r of ROUNDS.slice(1)){
+    for (const id of r.matches){
+      const [f1,f2] = KO_DEF[id];
+      const a = out.matches[f1].winner, b = out.matches[f2].winner;
+      let w = entry.ko?.[id] ?? null;
+      if (w!==a && w!==b) w = null;
+      out.matches[id] = {a,b,winner:(a&&b)?w:null};
+    }
+  }
+  out.champion = out.matches[104].winner;
+  return out;
+}
+/* Sets of teams an entry has reaching each stage (from its own bracket). */
+function reachSets(entry){
+  const bk = resolveBracket(entry);
+  const grab = ids => new Set(ids.map(id=>bk.matches[id]?.winner).filter(Boolean));
+  return {
+    r16: grab(ROUNDS[0].matches), qf: grab(ROUNDS[1].matches),
+    sf: grab(ROUNDS[2].matches), fin: grab(ROUNDS[3].matches),
+    champ: bk.champion, bracket: bk
+  };
+}
+function thirdsTeams(entry){   // the 8 third-placed TEAMS this entry sends through
+  if (!groupsComplete(entry.groups) || !entry.thirds || entry.thirds.length!==8) return new Set();
+  return new Set(entry.thirds.map(g => entry.groups[g][2]));
+}
+/* Score an entry against official results (both may be partial on KO; official groups may be partial too). */
+function scoreEntry(entry, official){
+  const s = {gw:0, ru:0, third:0, r16:0, qf:0, sf:0, fin:0, champ:0, total:0,
+             champCorrect:false, detail:{gw:new Set(), ru:new Set(), third:new Set(),
+             r16:new Set(), qf:new Set(), sf:new Set(), fin:new Set()}};
+  if (!official) return s;
+  const og = official.groups || {};
+  for (const g of GROUPS){
+    const o = og[g], u = entry.groups?.[g];
+    if (!Array.isArray(o) || o.length!==4 || !Array.isArray(u) || u.length!==4) continue;
+    if (u[0]===o[0]){ s.gw += POINTS.gw; s.detail.gw.add(u[0]); }
+    if (u[1]===o[1]){ s.ru += POINTS.ru; s.detail.ru.add(u[1]); }
+  }
+  const oT = thirdsTeams(official), uT = thirdsTeams(entry);
+  for (const t of uT) if (oT.has(t)){ s.third += POINTS.third; s.detail.third.add(t); }
+  const oR = reachSets(official), uR = reachSets(entry);
+  for (const t of uR.r16) if (oR.r16.has(t)){ s.r16 += POINTS.r32win + POINTS.r16team; s.detail.r16.add(t); }
+  for (const t of uR.qf)  if (oR.qf.has(t)) { s.qf  += POINTS.qf;  s.detail.qf.add(t); }
+  for (const t of uR.sf)  if (oR.sf.has(t)) { s.sf  += POINTS.sf;  s.detail.sf.add(t); }
+  for (const t of uR.fin) if (oR.fin.has(t)){ s.fin += POINTS.fin; s.detail.fin.add(t); }
+  if (uR.champ && uR.champ===oR.champ){ s.champ = POINTS.champ; s.champCorrect = true; }
+  s.total = s.gw+s.ru+s.third+s.r16+s.qf+s.sf+s.fin+s.champ;
+  return s;
+}
+/*LOGIC-END*/
+
+/* ──────────────────────────── Firebase ──────────────────────────── */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, getDocs, collection, deleteDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const POOL = (new URLSearchParams(location.search).get("pool") || "main").replace(/[^a-z0-9_-]/gi,"").slice(0,30) || "main";
+document.getElementById("poolChip").textContent = POOL.toUpperCase();
+if (POOL!=="main") document.getElementById("poolChip").classList.add("test");
+document.title = `World Cup '26 Pool — ${POOL.toUpperCase()}`;
+
+const configured = !FIREBASE_CONFIG.projectId.startsWith("PASTE");
+let db = null;
+if (configured){ db = getFirestore(initializeApp(FIREBASE_CONFIG)); }
+
+const entryRef = slug => doc(db, "pools", POOL, "entries", slug);
+const officialRef = () => doc(db, "pools", POOL, "meta", "official");
+
+async function sha256(str){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+const slugify = name => name.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40);
+const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ──────────────────────────── App state ──────────────────────────── */
+const $app = document.getElementById("app");
+const $dlg = document.getElementById("dlg");
+let S = {
+  view:"home", entries:[], official:null, loading:false,
+  current:null,         // {slug, data, canEdit, isAdmin}
+  tab:"groups", dirty:false, saving:false
+};
+const groupsLocked = () => Date.now() > Date.parse(LOCK_ISO);
+const koRoundLocked = rk => {
+  if (!S.official) return false;
+  const ids = ROUNDS.find(r=>r.key===rk).matches;
+  const bk = resolveBracket(S.official);
+  return ids.some(id => bk.matches[id]?.winner);
+};
+function lockCountdown(){
+  const ms = Date.parse(LOCK_ISO) - Date.now();
+  if (ms <= 0) return "Group picks locked";
+  const d = Math.floor(ms/86400000), h = Math.floor(ms%86400000/3600000), m = Math.floor(ms%3600000/60000);
+  return d>0 ? `${d}d ${h}h` : `${h}h ${m}m`;
+}
+
+async function loadAll(){
+  S.loading = true; render();
+  try{
+    const [snap, off] = await Promise.all([ getDocs(collection(db,"pools",POOL,"entries")), getDoc(officialRef()) ]);
+    S.entries = snap.docs.map(d=>({slug:d.id, ...d.data()})).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+    S.official = off.exists() ? off.data() : null;
+  }catch(e){
+    console.error(e);
+    toast(`Couldn't load the pool — check your internet connection. (${e.code||e.message})`, true);
+  }
+  S.loading = false; render();
+}
+
+/* ──────────────────────────── Rendering ──────────────────────────── */
+function render(){
+  if (!configured){ $app.innerHTML = setupHTML(); return; }
+  if (S.view==="home")   { $app.className="wrap"; $app.innerHTML = homeHTML(); }
+  if (S.view==="entry")  { $app.className="wrap"; $app.innerHTML = entryHTML(); }
+  if (S.view==="rules")  { $app.className="wrap"; $app.innerHTML = rulesHTML(); }
+}
+function setupHTML(){
+  return `<div class="card" style="margin-top:24px">
+    <p class="eyebrow">Setup needed</p>
+    <h2>Almost there</h2>
+    <p class="muted">This file hasn't been connected to its database yet. Open <b>worldcup-pool.html</b> in a text
+    editor and paste your Firebase config into the <b>FIREBASE_CONFIG</b> block at the top of the script —
+    the README that came with this file walks through it step by step (about 10 minutes, one time).</p></div>`;
+}
+
+/* ---------- HOME ---------- */
+function homeHTML(){
+  const hasResults = !!S.official;
+  const scored = hasResults ? S.entries.map(e=>({e, s:scoreEntry(e, S.official)}))
+      .sort((a,b)=> b.s.total-a.s.total || (b.s.champCorrect?1:0)-(a.s.champCorrect?1:0) || (a.e.name||"").localeCompare(b.e.name||"")) : null;
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px">
+    <span class="lockchip">⏱ Group picks: <b>${lockCountdown()}</b></span>
+    <button class="btn ghost small" onclick="UI.rules()">Scoring</button>
+  </div>
+
+  ${hasResults ? `
+  <p class="eyebrow" style="margin-top:22px">Standings</p>
+  <h2>Leaderboard</h2>
+  ${scored.length ? scored.map((r,i)=>`
+    <button class="person-row" onclick="UI.open('${r.e.slug}')">
+      <span class="rank r${i+1}">${i+1}</span>
+      <span class="pname">${esc(r.e.name)}${r.s.champCorrect?` <span title="Picked the champion">👑</span>`:""}
+        <span class="psub">${entryStatus(r.e)}</span></span>
+      <span class="ppts">${r.s.total}</span>
+    </button>`).join("") : `<p class="muted">No brackets yet.</p>`}
+  `:`
+  <p class="eyebrow" style="margin-top:22px">The pool</p>
+  <h2>Brackets</h2>
+  ${S.loading ? `<p class="muted">Loading…</p>` :
+    S.entries.length ? S.entries.map(e=>`
+    <button class="person-row" onclick="UI.open('${e.slug}')">
+      <span class="pname">${esc(e.name)}<span class="psub">${entryStatus(e)}</span></span>
+      <span style="color:var(--chalk-dim)">›</span>
+    </button>`).join("") : `<div class="card"><p class="muted">No brackets yet — be the first. Tap the gold button below, enter your name, make a PIN, and pick your way to glory.</p></div>`}
+  `}
+
+  <div style="margin-top:18px"><button class="btn" onclick="UI.newEntry()">＋ New bracket</button></div>
+  ${hasResults && S.entries.length ? `<p class="muted" style="margin-top:10px">Tap anyone to see their bracket scored — green is right, red is busted.</p>`:""}
+  <div class="footer-admin"><button onclick="UI.admin()">Admin · enter results</button></div>`;
+}
+function entryStatus(e){
+  const g = groupsComplete(e.groups) && e.thirds?.length===8;
+  if (!g) return "Group picks in progress";
+  const bk = resolveBracket(e);
+  return bk.champion ? `Champion: ${TEAMS[bk.champion][1]} ${TEAMS[bk.champion][0]}` : "Knockout picks in progress";
+}
+
+/* ---------- RULES ---------- */
+function rulesHTML(){
+  const P = POINTS;
+  return `
+  <button class="backlink" onclick="UI.home()">‹ Back</button>
+  <p class="eyebrow">How it's scored</p><h2>Scoring</h2>
+  <div class="card"><table class="rules">
+    <tr><td>Correct group winner (1st place)</td><td>${P.gw}</td></tr>
+    <tr><td>Correct group runner-up (2nd place)</td><td>${P.ru}</td></tr>
+    <tr><td>Correctly picked a 3rd-place team that advances</td><td>${P.third}</td></tr>
+    <tr><td>Each correct Round of 32 win</td><td>${P.r32win}</td></tr>
+    <tr><td>Each correct Round of 16 team</td><td>${P.r16team}</td></tr>
+    <tr><td>Each correct Quarterfinalist</td><td>${P.qf}</td></tr>
+    <tr><td>Each correct Semifinalist</td><td>${P.sf}</td></tr>
+    <tr><td>Each correct Finalist</td><td>${P.fin}</td></tr>
+    <tr><td>🏆 Correct CHAMPION</td><td>${P.champ}</td></tr>
+  </table>
+  <p class="muted">A team you correctly send through the Round of 32 is also a correct Round of 16 team, so each
+  correct R32 winner is worth ${P.r32win}+${P.r16team} = ${P.r32win+P.r16team} points. Points are per team, per round
+  reached — your bracket doesn't need the exact same matchups, just the right teams going through.</p>
+  <p class="muted">Your knockout bracket is built automatically from your group picks using FIFA's real Round of 32
+  assignments — including the official table that decides which third-place team each group winner faces.</p>
+  <p class="muted">Group picks lock Jun 20, 11:59 PM ET. Each knockout round locks once its first real result is entered.</p>
+  </div>`;
+}
+
+/* ---------- ENTRY (view / edit) ---------- */
+function entryHTML(){
+  const C = S.current, e = C.data;
+  const isOfficial = C.isAdmin;
+  const gDone = groupsComplete(e.groups) && e.thirds?.length===8;
+  const bk = gDone ? resolveBracket(e) : null;
+  const score = (!isOfficial && S.official) ? scoreEntry(e, S.official) : null;
+  return `
+  <button class="backlink" onclick="UI.home(true)">‹ All brackets</button>
+  <p class="eyebrow">${isOfficial ? "Admin · official results" : C.canEdit ? "Your bracket" : "Viewing"}</p>
+  <h2>${isOfficial ? "Actual Results" : esc(e.name)}</h2>
+  ${!C.canEdit && !isOfficial ? `<p class="muted" style="margin-top:-4px">View only — tap “Edit” to unlock with ${esc(e.name)}'s PIN.
+    <button class="btn ghost small" style="margin-left:6px" onclick="UI.unlock()">Edit</button></p>`:""}
+  ${score ? `<div class="card scorebar">
+      <div class="tot">Total<b>${score.total}</b></div>
+      <div>Groups<b>${score.gw+score.ru+score.third}</b></div>
+      <div>R32<b>${score.r16}</b></div>
+      <div>QF<b>${score.qf}</b></div>
+      <div>SF<b>${score.sf}</b></div>
+      <div>Final<b>${score.fin+score.champ}</b></div>
+    </div>`:""}
+  <div class="tabs">
+    <button class="tab ${S.tab==='groups'?'on':''}" onclick="UI.tab('groups')">Group stage${gDone?` <span class="dot"></span>`:""}</button>
+    <button class="tab ${S.tab==='bracket'?'on':''}" onclick="UI.tab('bracket')">Knockout${bk?.champion?` <span class="dot"></span>`:""}</button>
+  </div>
+  ${S.tab==="groups" ? groupsTabHTML(C, score) : bracketTabHTML(C, bk, score)}
+  ${C.canEdit||isOfficial ? `<div class="savebar"><div class="in">
+      <button class="btn" onclick="UI.save()" ${S.saving?"disabled":""}>${S.saving?`<span class="spin"></span> Saving…`:(S.dirty?"Save picks":"Saved ✓")}</button>
+    </div></div>`:""}`;
+}
+
+function groupsTabHTML(C, score){
+  const e = C.data;
+  const editable = (C.canEdit && !groupsLocked()) || C.isAdmin;
+  const lockedMsg = (!C.isAdmin && groupsLocked() && C.canEdit) ? `<div class="notice">Group picks are locked — the Jun 20 deadline has passed. Knockout picks stay open.</div>` : "";
+  const off = S.official;
+  let html = lockedMsg + (C.isAdmin
+    ? `<p class="muted" style="margin:12px 2px 0">Enter the <b>actual final order</b> of each group as games finish, then tick the 8 third-place teams that really advanced. You can fill this in gradually — scores update with whatever is entered.</p>`
+    : `<p class="muted" style="margin:12px 2px 0">Order all four teams in every group — 1st and 2nd advance automatically; 3rd might. Use the arrows${matchMedia("(pointer:fine)").matches?" or drag":""}.</p>`);
+  for (const g of GROUPS){
+    const order = (e.groups?.[g]?.length===4) ? e.groups[g] : [...GROUP_TEAMS[g]];
+    const oOrder = (!C.isAdmin && off?.groups?.[g]?.length===4) ? off.groups[g] : null;
+    html += `<div class="group-card"><div class="group-head"><b>GROUP ${g}</b>${e.groups?.[g]?`<span class="gdone">SET</span>`:""}</div>`;
+    order.forEach((t,i)=>{
+      const [nm,fl] = TEAMS[t];
+      let cls="", mark="";
+      if (oOrder){
+        if (i<=1){
+          const right = oOrder[i]===t;
+          cls = right ? "row-correct" : "row-wrong";
+          mark = right ? `<span class="scoremark ok">+${i===0?POINTS.gw:POINTS.ru}</span>` : `<span class="scoremark bad">✕</span>`;
+        }
+      }
+      html += `<div class="team-row ${cls}" ${editable?`draggable="true" data-g="${g}" data-i="${i}"`:""}>
+        <span class="pos p${i+1}">${["1ST","2ND","3RD","4TH"][i]}</span>
+        <span class="flag">${fl}</span><span class="tname">${nm}</span>
+        ${i===0?`<span class="ptchip gold">+${POINTS.gw}</span>`:i===1?`<span class="ptchip">+${POINTS.ru}</span>`:""}
+        ${mark}
+        ${editable?`<span class="arrows">
+          <button onclick="UI.move('${g}',${i},-1)" ${i===0?"disabled":""} aria-label="Move up">▲</button>
+          <button onclick="UI.move('${g}',${i},1)" ${i===3?"disabled":""} aria-label="Move down">▼</button></span>`:""}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  /* thirds picker */
+  const picked = e.thirds||[];
+  const offThirds = (!C.isAdmin && off) ? thirdsTeams(off) : null;
+  html += `<div class="card" id="thirds">
+    <div style="display:flex; justify-content:space-between; align-items:baseline">
+      <h3>Third place: who sneaks through?</h3>
+      <span class="counter"><b>${picked.length}</b>/8</span>
+    </div>
+    <p class="muted" style="margin-bottom:10px">${C.isAdmin?"Tick the 8 third-place teams that actually advanced.":"Pick the 8 third-place teams (from your rankings above) you think advance to the Round of 32."}</p>
+    <div class="thirds-grid">`;
+  for (const g of GROUPS){
+    const t = (e.groups?.[g]?.length===4) ? e.groups[g][2] : null;
+    const sel = picked.includes(g);
+    let cls = sel ? "sel" : "";
+    if (offThirds && t){
+      if (sel) cls += offThirds.has(t) ? " ok" : " bad";
+    }
+    html += `<button class="third-chip ${cls}" ${editable?`onclick="UI.third('${g}')"`:"disabled"}>
+      <span class="g">${g}</span>
+      ${t?`<span class="flag" style="font-size:17px;width:22px">${TEAMS[t][1]}</span><span class="n">${TEAMS[t][0]}</span>`
+         :`<span class="n" style="color:var(--chalk-dim)">— rank group ${g} first</span>`}
+      ${sel?`<span style="color:var(--gold);font-weight:900">✓</span>`:""}
+    </button>`;
+  }
+  html += `</div></div>
+  ${(groupsComplete(e.groups) && picked.length===8)
+    ? `<div class="notice ok">Group stage set — your Round of 32 is built. <b><a href="javascript:void(0)" onclick="UI.tab('bracket')" style="color:inherit">Go pick your knockout winners →</a></b></div>`
+    : ``}
+  <div style="height:70px"></div>`;
+  return html;
+}
+
+function bracketTabHTML(C, bk, score){
+  const e = C.data;
+  if (!bk) return `<div class="card" style="margin-top:16px"><p class="muted">Finish the group stage first — rank all 12 groups and choose your 8 advancing third-place teams. Your true Round of 32 will appear here automatically.</p></div>
+  <button class="btn ghost" onclick="UI.tab('groups')">Go to group picks</button>`;
+  const offBk = (!C.isAdmin && S.official) ? resolveBracket(S.official) : null;
+  const offReach = (!C.isAdmin && S.official) ? reachSets(S.official) : null;
+  const stagePts = {R32:`win = ${POINTS.r32win+POINTS.r16team} pts`, R16:`reach QF = ${POINTS.qf} pts`, QF:`reach SF = ${POINTS.sf} pts`, SF:`reach Final = ${POINTS.fin} pts`, F:`champion = ${POINTS.champ} pts`};
+  const nextStage = {R32:"r16", R16:"qf", QF:"sf", SF:"fin"};
+  let html = `<p class="muted" style="margin:12px 2px 4px">${C.isAdmin?"Tap the real winner of each game as it's played.":"Tap a team to send it through. This is your true bracket — built from your group picks with FIFA's official matchups."}</p>`;
+  for (const r of ROUNDS){
+    const locked = !C.isAdmin && C.canEdit && koRoundLocked(r.key);
+    html += `<div class="round-label"><h3>${r.name}</h3><span class="rule"></span><span class="pts">${stagePts[r.key]}</span></div>`;
+    if (locked) html += `<p class="muted" style="margin-top:-4px">🔒 Locked — real ${r.name} results are in.</p>`;
+    for (const id of r.matches){
+      const m = bk.matches[id];
+      html += `<div class="ticket"><span class="mno">M${id}</span><span class="mid"></span><div class="ticket-in">`;
+      for (const side of ["a","b"]){
+        const t = m[side];
+        const editable = (C.canEdit && !locked || C.isAdmin) && m.a && m.b;
+        let cls = "";
+        if (t && m.winner===t) cls = "pick";
+        if (t && m.winner===t && offReach && r.key!=="F"){
+          cls += offReach[nextStage[r.key]].size||offBk.matches[id].winner ? (offReach[nextStage[r.key]].has(t)?" ok":(offBk.matches[id].winner||roundDecided(offBk,r.key)?" bad":"")) : "";
+        }
+        if (t && m.winner===t && offReach && r.key==="F" && offReach.champ){
+          cls += offReach.champ===t ? " ok" : " bad";
+        }
+        html += t ? `<button class="tk-team ${cls}" ${editable?`onclick="UI.win('${id}','${t}')"`:"disabled"}>
+            <span class="flag">${TEAMS[t][1]}</span><span class="nm">${TEAMS[t][0]}</span>
+            <span class="src">${srcLabel(id,side,e)}</span></button>`
+          : `<div class="tk-team tbd"><span class="flag">·</span><span class="nm">TBD</span><span class="src">${srcLabel(id,side,e)}</span></div>`;
+      }
+      html += `</div></div>`;
+    }
+  }
+  if (bk.champion){
+    const [nm,fl] = TEAMS[bk.champion];
+    html += `<div class="champ-card"><div class="lbl">${C.isAdmin?"World Champion":"Your Champion"}</div>
+      <div class="flag">${fl}</div><div class="nm">${nm}</div>
+      ${score?.champCorrect?`<div style="color:var(--ok);font-weight:900;margin-top:4px">CORRECT · +${POINTS.champ}</div>`:""}</div>`;
+  }
+  html += `<div style="height:70px"></div>`;
+  return html;
+}
+function roundDecided(offBk, rk){
+  const ids = ROUNDS.find(r=>r.key===rk).matches;
+  return ids.every(id => offBk.matches[id].winner);
+}
+function srcLabel(id, side, e){
+  if (R32_DEF[id]){
+    const [kind,g] = R32_DEF[id][side==="a"?0:1];
+    if (kind==="W") return `1st Grp ${g}`;
+    if (kind==="R") return `2nd Grp ${g}`;
+    const alloc = thirdAllocation(e.thirds);
+    return alloc ? `3rd Grp ${alloc[g]}` : "3rd place";
+  }
+  return `Winner M${KO_DEF[id][side==="a"?0:1]}`;
+}
+
+/* ──────────────────────────── Actions ──────────────────────────── */
+function toast(msg, bad){
+  $dlg.innerHTML = `<p style="margin:0 0 14px">${esc(msg)}</p><button class="btn small" onclick="document.getElementById('dlg').close()">OK</button>`;
+  $dlg.showModal();
+}
+const UI = {
+  home(reload){ if (S.dirty && !confirm("Leave without saving your latest picks?")) return;
+    S.view="home"; S.current=null; S.dirty=false; render(); if (reload) loadAll(); },
+  rules(){ S.view="rules"; render(); window.scrollTo(0,0); },
+  tab(t){ S.tab=t; render(); window.scrollTo(0,0); },
+
+  async newEntry(){
+    $dlg.innerHTML = `<h3>New bracket</h3>
+      <p class="muted">Your name shows on the leaderboard. Your PIN is what lets only you edit your picks — don't forget it.</p>
+      <input class="input" id="nbName" placeholder="Your name" maxlength="30" style="margin:8px 0">
+      <input class="input" id="nbPin" placeholder="Create a 4-digit PIN" inputmode="numeric" maxlength="4" style="margin:0 0 14px">
+      <div class="row"><button class="btn small ghost" onclick="document.getElementById('dlg').close()">Cancel</button>
+      <button class="btn small" id="nbGo">Start picking</button></div>`;
+    $dlg.showModal();
+    document.getElementById("nbGo").onclick = async ()=>{
+      const name = document.getElementById("nbName").value.trim();
+      const pin = document.getElementById("nbPin").value.trim();
+      if (name.length<2) return toast("Enter your name (at least 2 characters).", true);
+      if (!/^\d{4}$/.test(pin)) return toast("PIN must be exactly 4 digits.", true);
+      const slug = slugify(name);
+      if (!slug) return toast("That name won't work — try letters and numbers.", true);
+      try{
+        const existing = await getDoc(entryRef(slug));
+        if (existing.exists()) return toast("That name is taken in this pool — add a last initial or nickname.", true);
+        const data = { name, pinHash: await sha256(pin+"|"+slug), groups:{}, thirds:[], ko:{}, createdAt:Date.now(), updatedAt:Date.now() };
+        await setDoc(entryRef(slug), data);
+        $dlg.close();
+        S.current = {slug, data, canEdit:true, isAdmin:false};
+        S.view="entry"; S.tab="groups"; S.dirty=false; render(); window.scrollTo(0,0);
+      }catch(err){ toast("Couldn't create your bracket — check connection and try again. ("+(err.code||err.message)+")", true); }
+    };
+  },
+
+  async open(slug){
+    const e = S.entries.find(x=>x.slug===slug);
+    if (!e) return;
+    S.current = {slug, data: structuredClone(e), canEdit:false, isAdmin:false};
+    S.view="entry"; S.tab="groups"; S.dirty=false; render(); window.scrollTo(0,0);
+  },
+
+  unlock(){
+    const C = S.current;
+    $dlg.innerHTML = `<h3>Edit ${esc(C.data.name)}'s bracket</h3>
+      <input class="input" id="upin" placeholder="4-digit PIN" inputmode="numeric" maxlength="4" style="margin:10px 0 14px">
+      <div class="row"><button class="btn small ghost" onclick="document.getElementById('dlg').close()">Cancel</button>
+      <button class="btn small" id="ugo">Unlock</button></div>`;
+    $dlg.showModal();
+    document.getElementById("ugo").onclick = async ()=>{
+      const pin = document.getElementById("upin").value.trim();
+      if (await sha256(pin+"|"+C.slug) === C.data.pinHash){ C.canEdit = true; $dlg.close(); render(); }
+      else toast("Wrong PIN.", true);
+    };
+  },
+
+  async admin(){
+    $dlg.innerHTML = `<h3>Admin</h3><p class="muted">Enter the admin PIN to record real results.</p>
+      <input class="input" id="apin" placeholder="Admin PIN" style="margin:10px 0 14px">
+      <div class="row"><button class="btn small ghost" onclick="document.getElementById('dlg').close()">Cancel</button>
+      <button class="btn small" id="ago">Enter</button></div>`;
+    $dlg.showModal();
+    document.getElementById("ago").onclick = async ()=>{
+      if (document.getElementById("apin").value.trim() !== ADMIN_PIN) return toast("Wrong admin PIN.", true);
+      $dlg.close();
+      const data = S.official ? structuredClone(S.official) : {groups:{}, thirds:[], ko:{}};
+      S.current = {slug:"__official__", data, canEdit:true, isAdmin:true};
+      S.view="entry"; S.tab="groups"; S.dirty=false; render(); window.scrollTo(0,0);
+    };
+  },
+
+  move(g, i, dir){
+    const e = S.current.data;
+    if (!e.groups[g] || e.groups[g].length!==4) e.groups[g] = [...GROUP_TEAMS[g]];
+    const arr = e.groups[g], j = i+dir;
+    if (j<0||j>3) return;
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+    S.dirty = true; render();
+  },
+  third(g){
+    const e = S.current.data;
+    if (!e.groups?.[g] || e.groups[g].length!==4) return toast("Rank group "+g+" first — its 3rd-place team comes from your order.", true);
+    const i = (e.thirds??=[]).indexOf(g);
+    if (i>=0) e.thirds.splice(i,1);
+    else { if (e.thirds.length>=8) return toast("You already have 8 — deselect one first.", true); e.thirds.push(g); }
+    S.dirty = true; render();
+    document.getElementById("thirds")?.scrollIntoView({block:"center"});
+  },
+  win(id, team){
+    const e = S.current.data;
+    (e.ko??={})[id] = (e.ko[id]===team) ? null : team;
+    S.dirty = true;
+    const y = window.scrollY; render(); window.scrollTo(0,y);
+  },
+
+  async save(){
+    const C = S.current; if (!C) return;
+    S.saving = true; { const y=window.scrollY; render(); window.scrollTo(0,y); }
+    try{
+      /* prune stale ko picks before saving */
+      const bk = resolveBracket(C.data);
+      const ko = {};
+      for (const [id,m] of Object.entries(bk.matches)) if (m.winner) ko[id]=m.winner;
+      C.data.ko = ko; C.data.updatedAt = Date.now();
+      if (C.isAdmin) await setDoc(officialRef(), C.data);
+      else await setDoc(entryRef(C.slug), C.data);
+      if (C.isAdmin) S.official = structuredClone(C.data);
+      S.dirty = false;
+    }catch(err){ toast("Save failed — check your connection and try again. ("+(err.code||err.message)+")", true); }
+    S.saving = false; { const y=window.scrollY; render(); window.scrollTo(0,y); }
+  }
+};
+window.UI = UI;
+
+/* drag & drop for group rows (desktop nicety; arrows work everywhere) */
+let dragInfo = null;
+document.addEventListener("dragstart", ev=>{
+  const r = ev.target.closest?.(".team-row[draggable]"); if (!r) return;
+  dragInfo = {g:r.dataset.g, i:+r.dataset.i}; r.classList.add("dragging");
+});
+document.addEventListener("dragover", ev=>{
+  if (dragInfo && ev.target.closest?.(`.team-row[data-g="${dragInfo.g}"]`)) ev.preventDefault();
+});
+document.addEventListener("drop", ev=>{
+  const r = ev.target.closest?.(".team-row[draggable]");
+  if (!r || !dragInfo || r.dataset.g!==dragInfo.g) { dragInfo=null; return; }
+  const e = S.current.data, g = dragInfo.g;
+  if (!e.groups[g] || e.groups[g].length!==4) e.groups[g] = [...GROUP_TEAMS[g]];
+  const arr = e.groups[g], from = dragInfo.i, to = +r.dataset.i;
+  arr.splice(to,0,arr.splice(from,1)[0]);
+  dragInfo = null; S.dirty = true; render();
+});
+document.addEventListener("dragend", ()=> document.querySelectorAll(".dragging").forEach(x=>x.classList.remove("dragging")));
+
+window.addEventListener("beforeunload", ev=>{ if (S.dirty){ ev.preventDefault(); ev.returnValue=""; } });
+
+/* boot */
+if (configured) loadAll(); else render();
+</script>
+</body>
+</html>
